@@ -23,6 +23,11 @@ readonly class CookieReader
         );
     }
 
+    public function readValue(string $name): string|null
+    {
+        return $this->read($name)?->value;
+    }
+
     public function has(string $name): bool
     {
         return array_key_exists($name, $_COOKIE);
