@@ -5,13 +5,14 @@ declare(strict_types=1);
 namespace Medas\Cookies;
 
 use Medas\Core\Attributes\Service;
+use Medas\HttpRequestHandler\ResponseDispatcher\Job;
 
 #[Service]
 readonly class CookieWriter
 {
-    public function write(Cookie $cookie): void
+    public function write(Cookie $cookie, Job|null $job = null): void
     {
-        if (headers_sent()) {
+        if ($job === null && headers_sent()) {
             throw new Exceptions\HeadersAlreadySent();
         }
 
@@ -40,7 +41,12 @@ readonly class CookieWriter
 
         $parts[] = 'SameSite=' . $cookie->sameSite->value;
 
-        // false = allow multiple Set-Cookie headers on the same response
-        header('Set-Cookie: ' . implode('; ', $parts), false);
+        if ($job) {
+            $job->addHeader('Set-Cookie', implode('; ', $parts));
+        }
+        else {
+            // false = allow multiple Set-Cookie headers on the same response
+            header('Set-Cookie: ' . implode('; ', $parts), false);
+        }
     }
 }
