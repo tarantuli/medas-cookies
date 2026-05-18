@@ -12,6 +12,7 @@ readonly class CookieWriter
 {
     public function write(Cookie $cookie, Job|null $job = null): void
     {
+
         if ($job === null && headers_sent()) {
             throw new Exceptions\HeadersAlreadySent();
         }
