@@ -59,3 +59,4 @@ class CookieWriter implements ResponseModifier
         return -100;
     }
 }
+
