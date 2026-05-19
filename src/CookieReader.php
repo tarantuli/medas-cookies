@@ -39,6 +39,8 @@ readonly class CookieReader
 
     public function has(string $name): bool
     {
+        $cookieData = $this->requestFactory->get()->cookieData;
+
         return isset($cookieData[$name]);
     }
 }
