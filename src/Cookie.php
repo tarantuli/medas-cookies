@@ -58,6 +58,7 @@ readonly class Cookie
         string $name,
         string $path = '/',
         string $domain = '',
+        bool   $secure = false,
     ): self
     {
         return new self(
@@ -66,7 +67,7 @@ readonly class Cookie
             expiresAt: 1,
             path: $path,
             domain: $domain,
-            secure: false,
+            secure: $secure,
             httpOnly: false,
             sameSite: SameSite::Lax,
         );
@@ -85,5 +86,8 @@ readonly class Cookie
         public SameSite $sameSite,
     )
     {
+        if ($this->sameSite === SameSite::None && !$this->secure) {
+            throw new Exceptions\CookieWithSameSiteNoneRequiresSecureTrue($this->name);
+        }
     }
 }

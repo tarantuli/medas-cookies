@@ -5,18 +5,19 @@ declare(strict_types=1);
 namespace Medas\Cookies;
 
 use Medas\Core\Attributes\Service;
-use Medas\HttpRequestHandler\ResponseDispatcher\Job;
+use Medas\HttpRequestHandler\{
+    ResponseDispatcher\ExceptionJob,
+    ResponseDispatcher\Job,
+    ResponseModifiers\ResponseModifier
+};
 
 #[Service]
-readonly class CookieWriter
+class CookieWriter implements ResponseModifier
 {
-    public function write(Cookie $cookie, Job|null $job = null): void
+    private array $cookies = [];
+
+    public function write(Cookie $cookie): void
     {
-
-        if ($job === null && headers_sent()) {
-            throw new Exceptions\HeadersAlreadySent();
-        }
-
         $parts = [rawurlencode($cookie->name) . '=' . rawurlencode($cookie->value)];
 
         if ($cookie->expiresAt > 0) {
@@ -41,13 +42,20 @@ readonly class CookieWriter
         }
 
         $parts[] = 'SameSite=' . $cookie->sameSite->value;
+        $this->cookies[] = implode('; ', $parts);
+    }
 
-        if ($job) {
-            $job->addHeader('Set-Cookie', implode('; ', $parts));
+    public function handle(Job|ExceptionJob $job): void
+    {
+        foreach ($this->cookies as $cookie) {
+            $job->addHeader('Set-Cookie', $cookie);
         }
-        else {
-            // false = allow multiple Set-Cookie headers on the same response
-            header('Set-Cookie: ' . implode('; ', $parts), false);
-        }
+
+        $this->cookies = [];
+    }
+
+    public function priority(): int
+    {
+        return -100;
     }
 }
