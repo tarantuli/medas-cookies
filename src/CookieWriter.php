@@ -12,13 +12,12 @@ use Medas\HttpRequestHandler\{
 };
 
 #[Service]
-class CookieWriter implements ResponseModifier
+readonly class CookieWriter implements ResponseModifier
 {
-    private array $cookies = [];
-
-    public function __serialize(): array
+    public function __construct(
+        private Jar $jar = new Jar(),
+    )
     {
-        return [];
     }
 
     public function write(Cookie $cookie): void
@@ -47,16 +46,16 @@ class CookieWriter implements ResponseModifier
         }
 
         $parts[] = 'SameSite=' . $cookie->sameSite->value;
-        $this->cookies[] = implode('; ', $parts);
+        $this->jar->cookies[] = implode('; ', $parts);
     }
 
     public function handle(Job|ExceptionJob $job): void
     {
-        foreach ($this->cookies as $cookie) {
+        foreach ($this->jar->cookies as $cookie) {
             $job->addHeader('Set-Cookie', $cookie);
         }
 
-        $this->cookies = [];
+        $this->jar->cookies = [];
     }
 
     public function priority(): int
