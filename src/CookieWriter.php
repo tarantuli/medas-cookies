@@ -16,6 +16,11 @@ class CookieWriter implements ResponseModifier
 {
     private array $cookies = [];
 
+    public function __serialize(): array
+    {
+        return [];
+    }
+
     public function write(Cookie $cookie): void
     {
         $parts = [rawurlencode($cookie->name) . '=' . rawurlencode($cookie->value)];
