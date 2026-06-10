@@ -55,10 +55,12 @@ readonly class Cookie
 
     // Creates a cookie with a past expiry date, instructing the browser to delete it
     public static function delete(
-        string $name,
-        string $path = '/',
-        string $domain = '',
-        bool   $secure = false,
+        string   $name,
+        string   $path = '/',
+        string   $domain = '',
+        bool     $secure = true,
+        bool     $httpOnly = true,
+        SameSite $sameSite = SameSite::Lax,
     ): self
     {
         return new self(
@@ -68,8 +70,8 @@ readonly class Cookie
             path: $path,
             domain: $domain,
             secure: $secure,
-            httpOnly: false,
-            sameSite: SameSite::Lax,
+            httpOnly: $httpOnly,
+            sameSite: $sameSite,
         );
     }
 
