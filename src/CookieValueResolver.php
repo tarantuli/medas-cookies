@@ -6,7 +6,7 @@ namespace Medas\Cookies;
 
 use Medas\Core\{Interfaces\ParameterResolver, ParameterResolverResult};
 
-class CookieValueResolver implements ParameterResolver
+readonly class CookieValueResolver implements ParameterResolver
 {
     public function priority(): int
     {
