@@ -24,6 +24,6 @@ class CookiesPackage extends BasePackage
     {
         parent::initialize($config);
 
-        $config->addParameterResolver(service(CookieValueResolver::class));
+        $config->addParameterResolver(CookieValueResolver::class);
     }
 }
