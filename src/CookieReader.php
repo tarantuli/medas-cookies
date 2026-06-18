@@ -15,7 +15,7 @@ readonly class CookieReader
     {
         $query = dispatch(new CurrentRequestQuery());
 
-        if (!array_key_exists($name, $query->request->cookieData)) {
+        if (!array_key_exists($name, $query->request->cookieData->data())) {
             return null;
         }
 
@@ -35,6 +35,6 @@ readonly class CookieReader
     {
         $query = dispatch(new CurrentRequestQuery());
 
-        return array_key_exists($name, $query->request->cookieData);
+        return array_key_exists($name, $query->request->cookieData->data());
     }
 }
